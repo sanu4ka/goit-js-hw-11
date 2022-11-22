@@ -1,6 +1,8 @@
 import './css/styles.css';
 import Notiflix from 'notiflix';
 import axios from 'axios';
+import SimpleLightbox from 'simplelightbox';
+import 'simplelightbox/dist/simple-lightbox.min.css';
 
 const inputRef = document.querySelector('#search-form');
 const gallery = document.querySelector('.gallery');
@@ -24,6 +26,11 @@ function onSubmit(event) {
       if (response.totalHits) {
         makeGallery(makeGalleryCards(response.hits));
         showLoadMoreButton();
+        Notiflix.Notify.info(`Hooray! We found ${response.totalHits} images.`);
+        var lightbox = new SimpleLightbox('.photo-card a', {
+          captionsData: 'alt',
+          captionDelay: 250,
+        });
         if (response.hits.length < 40) {
           whenGalleryEnd();
         }
@@ -62,10 +69,21 @@ function makeGallery(cards) {
 
 function makeGalleryCards(massive) {
   return massive
-    .map(({ webformatURL, tags, likes, views, comments, downloads }) => {
-      return `
+    .map(
+      ({
+        webformatURL,
+        largeImageURL,
+        tags,
+        likes,
+        views,
+        comments,
+        downloads,
+      }) => {
+        return `
         <div class="photo-card">
+          <a href="${largeImageURL}">
           <img src="${webformatURL}" alt="${tags}" loading="lazy" width="300"/>
+          </a>
           <div class="info">
             <p class="info-item">
               <b>Likes</b>
@@ -86,7 +104,8 @@ function makeGalleryCards(massive) {
           </div>
         </div>
       `;
-    })
+      }
+    )
     .join('');
 }
 
@@ -95,6 +114,11 @@ function onLoadMoreButtonClick() {
     .then(response => {
       if (response.totalHits) {
         makeGallery(makeGalleryCards(response.hits));
+        var lightbox = new SimpleLightbox('.photo-card a', {
+          captionsData: 'alt',
+          captionDelay: 250,
+        });
+        lightbox.refresh;
         if (response.hits.length < 40) {
           whenGalleryEnd();
         }
