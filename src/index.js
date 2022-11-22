@@ -118,7 +118,13 @@ function onLoadMoreButtonClick() {
           captionsData: 'alt',
           captionDelay: 250,
         });
+
         lightbox.refresh;
+
+        const { height: cardHeight } =
+          gallery.firstElementChild.getBoundingClientRect();
+        window.scrollBy(0, cardHeight * 2);
+
         if (response.hits.length < 40) {
           whenGalleryEnd();
         }
@@ -156,4 +162,30 @@ function onError() {
     'Sorry, there are no images matching your search query. Please try again.'
   );
   page = 1;
+}
+
+window.addEventListener('scroll', loadOnScroll);
+
+var throttleTimer;
+
+const throttle = (callback, time) => {
+  if (throttleTimer) return;
+
+  throttleTimer = true;
+
+  setTimeout(() => {
+    callback();
+    throttleTimer = false;
+  }, time);
+};
+
+function loadOnScroll() {
+  throttle(() => {
+    const endOfPage =
+      window.innerHeight + window.pageYOffset >= document.body.offsetHeight;
+
+    if (endOfPage) {
+      onLoadMoreButtonClick();
+    }
+  }, 1000);
 }
