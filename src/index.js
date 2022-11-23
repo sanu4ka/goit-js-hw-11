@@ -49,7 +49,7 @@ async function fetchGallery(value, page) {
   const API_KEY = '31518737-8890035b7ccda7383c5734768';
   const URL = `?key=${API_KEY}&q=${value}&image_type=photo&orientation=horizontal&safesearch=true&per_page=40&page=${page}`;
   return await axios
-    .get(`https://pixabay.com/api${URL}`)
+    .get(`https://pixabay.com/api/${URL}`)
     .then(response => response.data);
 }
 
